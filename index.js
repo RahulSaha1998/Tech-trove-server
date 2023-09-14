@@ -55,6 +55,27 @@ async function run() {
             res.send(result);
         })
 
+        //update products to the Product Collection
+        app.put('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedProduct = req.body;
+
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updatedUser = {
+                $set: {
+                    product_name: updatedProduct.product_name,
+                    price: updatedProduct.price,
+                    quantity: updatedProduct.quantity,
+                    rating: updatedProduct.rating,
+                    description: updatedProduct.description
+                }
+            }
+
+            const result = await productCollection.updateOne(filter, updatedUser, options);
+            res.send(result);
+        })
+
 
         //------------- Cart Collection Section -------------------
 
