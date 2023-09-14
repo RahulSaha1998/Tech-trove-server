@@ -76,6 +76,15 @@ async function run() {
             res.send(result);
         })
 
+        //Delete products from the Product Collection
+        app.delete('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log('please delete from database', id);
+            const query = { _id: new ObjectId(id) };
+            const result = await productCollection.deleteOne(query)
+            res.send(result);
+        })
+
 
         //------------- Cart Collection Section -------------------
 
