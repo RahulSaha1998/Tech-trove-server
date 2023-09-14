@@ -6,8 +6,6 @@ require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
 
-
-
 //middleware
 app.use(cors());
 app.use(express.json());
@@ -28,12 +26,32 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const productCollection = client.db('techTroveDB').collection("products");
+
+    //get all products from Product Collection
+    app.get('/products', async (req, res) => {
+        const result = await productCollection.find().toArray();
+        res.send(result)
+    })
+
+    //post product to the Product Collection
+    app.post('/products', async (req, res) => {
+        const product = req.body;
+        console.log('new product', product);
+        const result = await productCollection.insertOne(product);
+        res.send(result);
+    })
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
