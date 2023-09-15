@@ -28,7 +28,8 @@ async function run() {
         await client.connect();
 
         const productCollection = client.db('techTroveDB').collection("products");
-        const CartCollection = client.db('techTroveDB').collection("carts");
+        const cartCollection = client.db('techTroveDB').collection("carts");
+        const paymentCollection = client.db('techTroveDB').collection("payments");
 
         //------------- Product Collection Section -------------------
 
@@ -90,14 +91,22 @@ async function run() {
 
         // get products from Cart Collection
         app.get('/cartProducts', async (req, res) => {
-            const result = await CartCollection.find().toArray();
+            const result = await cartCollection.find().toArray();
             res.send(result)
+        })
+
+        //get single product from cardProduct Collection
+        app.get('/cartProducts/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await cartCollection.findOne(query);
+            res.send(result);
         })
 
         // post products from Cart Collection
         app.post("/cartProducts", async (req, res) => {
             const cartItem = req.body;
-            const result = await CartCollection.insertOne(cartItem);
+            const result = await cartCollection.insertOne(cartItem);
             res.send(result);
         });
 
@@ -106,9 +115,52 @@ async function run() {
         app.delete("/cartProducts/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
-            const result = await CartCollection.deleteOne(query);
+            const result = await cartCollection.deleteOne(query);
             res.send(result);
         });
+
+
+        //-------------Payments Collection Section -------------------
+
+        // post products from Cart Collection
+        // app.post("/payments", async (req, res) => {
+        //     const paymentItem = req.body;
+        //     const result = await paymentCollection.insertOne(paymentItem);
+        //     res.send(result);
+        // });
+
+
+        // post products from Cart Collection
+        app.post("/payments", async (req, res) => {
+
+            const paymentItem = req.body;
+            const insertResult = await paymentCollection.insertOne(paymentItem);
+
+            const query = { p_id: paymentItem.p_id };
+            const cart = await cartCollection.findOne(query);
+
+            const updateProductQuery = { _id: new ObjectId(cart.p_id) };
+
+            const productUpdate = {
+                $inc: { quantity: -1 },
+                $currentDate: { updatedAt: true }
+            };
+
+            const updateResult = await productCollection.updateOne(updateProductQuery, productUpdate);
+
+
+            const deleteResult = await cartCollection.deleteOne(query);
+
+            res.send(insertResult, updateResult, deleteResult);
+
+        });
+
+
+
+
+
+
+
 
 
         // Send a ping to confirm a successful connection
