@@ -88,10 +88,25 @@ async function run() {
 
         //------------- Cart Collection Section -------------------
 
+        // get products from Cart Collection
+        app.get('/cartProducts', async (req, res) => {
+            const result = await CartCollection.find().toArray();
+            res.send(result)
+        })
+
         // post products from Cart Collection
         app.post("/cartProducts", async (req, res) => {
             const cartItem = req.body;
             const result = await CartCollection.insertOne(cartItem);
+            res.send(result);
+        });
+
+
+        // Delete products from Cart Collection
+        app.delete("/cartProducts/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await CartCollection.deleteOne(query);
             res.send(result);
         });
 
