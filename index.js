@@ -122,15 +122,14 @@ async function run() {
 
         //-------------Payments Collection Section -------------------
 
-        // post products from Cart Collection
-        // app.post("/payments", async (req, res) => {
-        //     const paymentItem = req.body;
-        //     const result = await paymentCollection.insertOne(paymentItem);
-        //     res.send(result);
-        // });
+        // post products to payments Collection, delete carts in cartCollection and Update Quantity in Product Collection
 
+        // get products from Cart Collection
+        app.get('/paidProducts', async (req, res) => {
+            const result = await paymentCollection.find().toArray();
+            res.send(result)
+        })
 
-        // post products from Cart Collection
         app.post("/payments", async (req, res) => {
 
             const paymentItem = req.body;
