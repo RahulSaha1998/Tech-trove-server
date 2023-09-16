@@ -31,8 +31,9 @@ async function run() {
         const cartCollection = client.db('techTroveDB').collection("carts");
         const paymentCollection = client.db('techTroveDB').collection("payments");
 
-        //------------- Product Collection Section -------------------
 
+
+        //------------- Product Collection Section -------------------
 
         //get all products from Product Collection
         app.get('/products', async (req, res) => {
@@ -51,7 +52,6 @@ async function run() {
         //post product to the Product Collection
         app.post('/products', async (req, res) => {
             const product = req.body;
-            console.log('new product', product);
             const result = await productCollection.insertOne(product);
             res.send(result);
         })
@@ -80,15 +80,16 @@ async function run() {
         //Delete products from the Product Collection
         app.delete('/products/:id', async (req, res) => {
             const id = req.params.id;
-            console.log('please delete from database', id);
             const query = { _id: new ObjectId(id) };
             const result = await productCollection.deleteOne(query)
             res.send(result);
         })
 
 
-        //------------- Cart Collection Section -------------------
 
+
+        //------------- Cart Collection Section -------------------
+        
         // get products from Cart Collection
         app.get('/cartProducts', async (req, res) => {
             const result = await cartCollection.find().toArray();
@@ -120,9 +121,9 @@ async function run() {
         });
 
 
-        //-------------Payments Collection Section -------------------
 
-        // post products to payments Collection, delete carts in cartCollection and Update Quantity in Product Collection
+
+        //-------------Payments Collection Section -------------------
 
         // get products from Cart Collection
         app.get('/paidProducts', async (req, res) => {
@@ -130,6 +131,8 @@ async function run() {
             res.send(result)
         })
 
+
+        // post products to payments Collection, delete carts in cartCollection and Update Quantity in Product Collection
         app.post("/payments", async (req, res) => {
 
             const paymentItem = req.body;
